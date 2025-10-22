@@ -121,3 +121,5 @@ fi
 # --- Message ---
 echo "🧩 Developer shell loaded (.bashrc-developer)"
 
+[ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"
+

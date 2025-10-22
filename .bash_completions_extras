@@ -1,6 +1,7 @@
 # ===========================================
 # Extra Bash Completions (lazy-loaded)
 # Martin Stadler (mestadler)
+# Using custom-built binaries from /usr/local/bin
 # ===========================================
 
 # --- GitHub CLI ---
@@ -8,10 +9,38 @@ if command -v gh >/dev/null 2>&1; then
   eval "$(gh completion -s bash)"
 fi
 
-# --- Kubernetes / kubectl (+ alias k) ---
-if command -v kubectl >/dev/null 2>&1; then
-  source <(kubectl completion bash)
-  complete -o default -F __start_kubectl k
+# --- Kubernetes / kubectl (+ aliases) ---
+if [ -x /usr/local/bin/kubectl ]; then
+  source <(/usr/local/bin/kubectl completion bash)
+  complete -o default -F __start_kubectl kubectl 2>/dev/null
+  complete -o default -F __start_kubectl k 2>/dev/null
+  complete -o default -F __start_kubectl kg 2>/dev/null
+  complete -o default -F __start_kubectl kd 2>/dev/null
+fi
+
+# --- Helm ---
+if [ -x /usr/local/bin/helm ]; then
+  source <(/usr/local/bin/helm completion bash)
+fi
+
+# --- Flux ---
+if [ -x /usr/local/bin/flux ]; then
+  source <(/usr/local/bin/flux completion bash)
+fi
+
+# --- ORAS ---
+if [ -x /usr/local/bin/oras ]; then
+  source <(/usr/local/bin/oras completion bash)
+fi
+
+# --- Cosign ---
+if [ -x /usr/local/bin/cosign ]; then
+  source <(/usr/local/bin/cosign completion bash)
+fi
+
+# --- Skopeo ---
+if [ -x /usr/local/bin/skopeo ]; then
+  source <(/usr/local/bin/skopeo completion bash) 2>/dev/null || true
 fi
 
 # --- k0rdent / k0s ---
@@ -25,29 +54,11 @@ fi
 # --- Docker / nerdctl ---
 if command -v docker >/dev/null 2>&1; then
   source <(docker completion bash) 2>/dev/null || true
+  complete -o default -F __start_docker d 2>/dev/null || true
 fi
 if command -v nerdctl >/dev/null 2>&1; then
   source <(nerdctl completion bash) 2>/dev/null || true
-fi
-
-# --- Flux ---
-if command -v flux >/dev/null 2>&1; then
-  source <(flux completion bash) 2>/dev/null || true
-fi
-
-# --- Helm ---
-if command -v helm >/dev/null 2>&1; then
-  source <(helm completion bash) 2>/dev/null || true
-fi
-
-# --- ORAS ---
-if command -v oras >/dev/null 2>&1; then
-  source <(oras completion bash) 2>/dev/null || true
-fi
-
-# --- Cosign ---
-if command -v cosign >/dev/null 2>&1; then
-  source <(cosign completion bash) 2>/dev/null || true
+  complete -o default -F __start_nerdctl nc 2>/dev/null || true
 fi
 
 # --- KVM / Virtualisation (best-effort) ---
@@ -67,4 +78,3 @@ fi
 if command -v virtctl >/dev/null 2>&1; then
   source <(virtctl completion bash) 2>/dev/null || true
 fi
-

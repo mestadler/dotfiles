@@ -5,7 +5,7 @@
 [core]
 	editor = vi
 	autocrlf = input
-	excludesfile = ~/.gitignore_global
+	excludesfile = /home/martin/.gitignore_global
 	filemode = false
 
 [init]

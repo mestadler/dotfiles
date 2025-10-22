@@ -98,3 +98,6 @@ fi
 # --- Final greeting ---
 echo "👋 Bash environment loaded for $(whoami) — $(hostname)"
 
+[ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"
+[ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"
+[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"
