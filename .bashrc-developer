@@ -3,9 +3,12 @@
 # For Kubernetes, Containers, and DevOps
 # ===========================================
 
-# --- Load only once ---
-[[ "$BASHRC_DEVELOPER_LOADED" == "1" ]] && return
-export BASHRC_DEVELOPER_LOADED=1
+# Load only once per interactive shell
+[[ $- != *i* ]] && return 0          # skip non-interactive shells
+if [[ "${BASHRC_DEVELOPER_LOADED:-}" == "1" ]]; then
+  return 0
+fi
+BASHRC_DEVELOPER_LOADED=1
 
 # ==================================================
 # Environment Variables
@@ -108,12 +111,48 @@ klog() {
   kubectl logs -f $(kubectl get pods $ns | grep "$1" | head -1 | awk '{print $1}') $ns
 }
 
-# ==================================================
-# Custom Prompt (optional - override default)
-# ==================================================
-if [[ $PS1 && -z "${INSIDE_EMACS}" ]]; then
-  PS1='\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]$ '
-fi
+git_acp() {
+    local msg=""
+    local date=$(date +"%Y-%m-%d")
+    local push=true
+
+    # Parse arguments
+    for arg in "$@"; do
+        case "$arg" in
+            --no-push)
+                push=false
+                ;;
+            *)
+                msg+="$arg "
+                ;;
+        esac
+    done
+    msg=$(echo "$msg" | sed 's/[[:space:]]*$//')  # trim trailing space
+
+    # Default commit message if none provided
+    if [ -z "$msg" ]; then
+        msg="Update $date"
+    fi
+
+    git add .
+    git commit -m "$msg"
+
+    if [ "$push" = true ]; then
+        echo
+        echo "📂 Repository status before push:"
+        git --no-pager status -sb
+        echo
+        read -p "Push to remote? [y/N] " confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            git push
+        else
+            echo "Push skipped."
+        fi
+    else
+        echo "Push disabled by flag (--no-push)."
+    fi
+}
+
 
 # --- Message ---
 echo "🧩 Developer shell loaded"

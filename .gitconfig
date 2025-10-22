@@ -60,9 +60,9 @@
 # [includeIf "gitdir:~/DevOps/*k0rdent*/"]
 #     path = ~/.gitconfig-work
 #
-# Then put work-specific overrides in ~/.gitconfig-work, e.g.:
+# Put work-specific overrides in ~/.gitconfig-work, e.g.:
 #   [user]
-#       email = your.work.email@company.com
+#       email = xxxx@xxxx.com
 #   [commit]
 #       gpgsign = true
 
