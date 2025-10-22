@@ -1,0 +1,103 @@
+# ===========================================
+# AI / GPU aliases & environment (mixed AMD/NVIDIA)
+# Martin Stadler (mestadler)
+# ===========================================
+
+# ---- Caches (keep disks tidy / fast) ----
+export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"
+export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-$HF_HOME/transformers}"
+export HF_DATASETS_CACHE="${HF_DATASETS_CACHE:-$HF_HOME/datasets}"
+export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"  # fast downloads if hf-transfer installed
+
+# ---- Backend visibility (set only when you need to mask GPUs) ----
+# export CUDA_VISIBLE_DEVICES=0
+# export HIP_VISIBLE_DEVICES=0
+
+# ---- PyTorch runtime niceties (harmless on both backends) ----
+# Tweak allocator behaviour on large models; adjust if you see fragmentation OOMs
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-max_split_size_mb:64}"
+
+# ---- ROCm quirks (uncomment ONLY if you know your GFX needs override) ----
+# export HSA_OVERRIDE_GFX_VERSION=11.0.0
+
+# ---- Quick backend detect ----
+ai_backend() {
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    echo "CUDA/NVIDIA"; return 0
+  elif command -v rocm-smi >/dev/null 2>&1 || command -v rocminfo >/dev/null 2>&1; then
+    echo "ROCm/AMD"; return 0
+  else
+    echo "CPU/No GPU tools detected"; return 1
+  fi
+}
+
+# ---- GPU status helpers ----
+alias nvsmi='watch -n 1 nvidia-smi'
+alias rocmsmi='watch -n 1 rocm-smi 2>/dev/null || watch -n 1 rocminfo'
+gpuinfo() {
+  command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || true
+  command -v rocm-smi   >/dev/null 2>&1 && rocm-smi   || command -v rocminfo >/dev/null 2>&1 && rocminfo || true
+  command -v lspci >/dev/null 2>&1 && lspci | egrep -i "vga|3d|display" || true
+}
+
+# ---- Python venv helpers ----
+mkvenv() { python3 -m venv "${1:-.venv}" && . "${1:-.venv}/bin/activate" && pip -q install -U pip wheel; }
+workon() { . "${1:-.venv}/bin/activate"; }
+
+# ---- Torch sanity checks ----
+ptinfo() { python3 - <<'PY'
+import sys, platform
+print("python:", sys.version.split()[0]); 
+try:
+    import torch
+except Exception as e:
+    print("torch: NOT INSTALLED:", e); raise SystemExit(0)
+print("torch:", torch.__version__)
+print("cuda build:", getattr(torch.version, "cuda", None), "available:", torch.cuda.is_available())
+print("hip build:", getattr(torch.version, "hip", None))
+print("num cuda devices:", torch.cuda.device_count() if torch.cuda.is_available() else 0)
+if torch.cuda.is_available():
+    try: print("cuda device 0:", torch.cuda.get_device_name(0))
+    except Exception as e: print("cuda device name error:", e)
+PY
+}
+ptgpu() { python3 - <<'PY'
+import torch
+print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CUDA not available")
+PY
+}
+pthip() { python3 - <<'PY'
+import subprocess, shutil
+p = shutil.which("rocminfo")
+print("rocminfo:", bool(p))
+subprocess.run(["rocminfo"], check=False)
+PY
+}
+
+# ---- Shared cache mounts for containers ----
+ai_cache_args() {
+  echo -n "-v $HF_HOME:$HF_HOME -e HF_HOME -e TRANSFORMERS_CACHE -e HF_DATASETS_CACHE"
+}
+
+# ---- nerdctl GPU container helpers ----
+# NVIDIA: requires nvidia-container-toolkit configured for containerd
+ncnv()   { nerdctl run --rm -it --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 "$(ai_cache_args)" "$@"; }
+# AMD ROCm: map KFD/DRI; ensure user in 'video' group; seccomp relaxed for profiling/ptrace
+ncrocm() { nerdctl run --rm -it --device /dev/kfd --device /dev/dri --group-add video --ipc=host --cap-add SYS_PTRACE --security-opt seccomp=unconfined "$(ai_cache_args)" "$@"; }
+
+# Auto-pick backend based on host
+ncaigpu() {
+  if ai_backend | grep -qi nvidia; then ncnv "$@"
+  elif ai_backend | grep -qi rocm; then ncrocm "$@"
+  else echo "No GPU backend detected; running CPU container"; nerdctl run --rm -it "$(ai_cache_args)" "$@"
+  fi
+}
+
+# ---- Version shorthands ----
+nvver()  { command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi --query-gpu=name,driver_version,cuda_version --format=csv,noheader || echo "nvidia-smi not found"; }
+rocmver(){ command -v rocm-smi   >/dev/null 2>&1 && rocm-smi --showproductname --showdriverversion || command -v rocminfo >/dev/null 2>&1 && rocminfo | sed -n '1,20p' || echo "rocm-smi/rocminfo not found"; }
+
+# ---- Examples (commented) ----
+# ncnv  nvcr.io/nvidia/pytorch:24.08-py3 bash
+# ncrocm rocm/pytorch:rocm6.2.4_ubuntu20.04_py3.10_pytorch_2.5.1 bash
+# ncaigpu <image> bash
