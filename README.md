@@ -6,29 +6,29 @@ Optimized configuration files for Debian-based cloud-native, Kubernetes, and AI/
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🐚 Bash Configuration
+###  Bash Configuration
 - **Optimized loading order** - No duplicates, proper sequence
 - **Custom tool completions** - kubectl, helm, flux, oras, cosign from `/usr/local/bin`
 - **Smart PATH management** - Custom binaries take precedence
 - **Modular design** - Separate files for different concerns
 - **Fast startup** - Lazy-loaded completions
 
-### 🔧 Tools & Aliases
+###  Tools & Aliases
 - **Kubernetes** - kubectl shortcuts (k, kg, kgp, kl, ke, kd)
 - **Containers** - nerdctl/containerd primary (nc, ncl, ncu, ncd)
 - **Git** - Smart aliases (gs, gl, gc, gp, gpl)
 - **AI/GPU** - Mixed NVIDIA/AMD support with auto-detection
 - **GitHub CLI** - Quick clone, repo management
 
-### 📝 Vim Configuration
+###  Vim Configuration
 - Line numbers enabled
 - System clipboard integration (Ctrl+C/V)
 - Syntax highlighting
 - Sensible defaults for YAML/JSON
 
-### 🔐 Git Setup
+###  Git Setup
 - GitHub CLI credential helper
 - Global gitignore (secrets, AI models, build artifacts)
 - Rebase by default
@@ -36,7 +36,7 @@ Optimized configuration files for Debian-based cloud-native, Kubernetes, and AI/
 
 ---
 
-## 📦 Contents
+##  Contents
 
 ```
 dotfiles/
@@ -55,7 +55,7 @@ dotfiles/
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Fresh Installation
 
@@ -110,7 +110,7 @@ source ~/.bashrc
 
 ---
 
-## 🎯 Key Aliases & Commands
+##  Key Aliases & Commands
 
 ### Kubernetes
 ```bash
@@ -191,7 +191,7 @@ weather         # Weather in London
 
 ---
 
-## 🔧 Custom Tools
+##  Custom Tools
 
 This setup uses custom-built binaries in `/usr/local/bin` for:
 
@@ -207,7 +207,7 @@ All tools have auto-completion configured with absolute paths to ensure the cust
 
 ---
 
-## ⚙️ Configuration Highlights
+##  Configuration Highlights
 
 ### Optimized Loading Order
 ```
@@ -237,7 +237,7 @@ $HOME/bin
 
 ---
 
-## 🔁 Updating Configuration
+##  Updating Configuration
 
 ### Pull Latest Changes
 ```bash
@@ -262,7 +262,7 @@ git push
 
 ---
 
-## 🧪 Testing & Verification
+##  Testing & Verification
 
 ### Verify Installation
 ```bash
@@ -301,7 +301,7 @@ source ~/.bashrc
 
 ---
 
-## 🎓 Best Practices
+##  Best Practices
 
 ### Security
 - Never commit kubeconfig files
@@ -322,7 +322,7 @@ source ~/.bashrc
 
 ---
 
-## 🛠️ Customization
+##  Customization
 
 ### Work vs Personal
 Create work-specific overrides:
@@ -344,7 +344,7 @@ Add to appropriate file:
 
 ---
 
-## 📚 System Requirements
+##  System Requirements
 
 - **OS**: Debian 11+, Ubuntu 22.04+, Linux Mint 21+
 - **Shell**: bash 4.0+
@@ -353,7 +353,7 @@ Add to appropriate file:
 
 ---
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### Completions Not Working
 ```bash
@@ -385,7 +385,7 @@ grep -r "bash_aliases" ~/
 
 ---
 
-## 📝 Notes
+##  Notes
 
 - **Editor**: `vi` / `vim`
 - **Target systems**: Debian / Ubuntu / Linux Mint
@@ -395,7 +395,7 @@ grep -r "bash_aliases" ~/
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 Configuration optimized with best practices from:
 - Kubernetes SIG-CLI
@@ -404,7 +404,7 @@ Configuration optimized with best practices from:
 
 ---
 
-**License:** Personal use only  
+**License:** Personal use / MIT  
 **Author:** Martin Stadler  
 **Contact:** martin@sansnom.co.uk  
 **Last Updated:** October 2025
