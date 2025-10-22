@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =========================================
 # Bootstrap personal dotfiles (symlink mode)
-# Author: Martin Stadler (mestadler)
+# Martin Stadler (mestadler)
 # =========================================
 set -euo pipefail
 
@@ -52,17 +52,24 @@ link_file() {
   echo "🔗 Linked ${dst} → ${abs_src}"
 }
 
+# --- Normalise permissions locally (non-fatal) ---
+chmod 755 bootstrap-dotfiles.sh ai-check.sh 2>/dev/null || true
+for f in .bashrc .bashrc-developer .bash_aliases .bash_aliases_ai .bash_completions_extras .gitconfig .gitignore_global .profile .vimrc; do
+  [ -f "$f" ] && chmod 644 "$f" || true
+done
+
 # --- Always set global gitignore ---
 [ -f ".gitignore_global" ] && {
   link_file ".gitignore_global" "${HOME}/.gitignore_global"
   git config --global core.excludesfile "${HOME}/.gitignore_global"
 } || echo "⚠️  Missing .gitignore_global in repo"
 
-# --- Link common dotfiles if present ---
+# --- Link all managed files ---
 for f in \
   .bashrc \
   .bashrc-developer \
   .bash_aliases \
+  .bash_aliases_ai \
   .bash_completions_extras \
   .gitconfig \
   .vimrc \
@@ -71,27 +78,43 @@ do
   [ -f "$f" ] && link_file "$f" "${HOME}/$f"
 done
 
-# --- Post-steps: ensure .bashrc sources extras (defensive) ---
-if ! grep -q '.bash_completions_extras' "${HOME}/.bashrc"; then
-  echo '[[ -f "$HOME/.bash_completions_extras" ]] && source "$HOME/.bash_completions_extras"' >> "${HOME}/.bashrc"
-  echo "➕ Added source line for .bash_completions_extras to ~/.bashrc"
+# --- Ensure ai-check on PATH ---
+if [ -f "ai-check.sh" ]; then
+  mkdir -p "$HOME/bin"
+  chmod 755 ai-check.sh 2>/dev/null || true
+  link_file "ai-check.sh" "$HOME/bin/ai-check"
 fi
-if ! grep -q '.bash_aliases' "${HOME}/.bashrc"; then
-  echo '[ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"' >> "${HOME}/.bashrc"
-  echo "➕ Added source line for .bash_aliases to ~/.bashrc"
-fi
-if ! grep -q '.bashrc-developer' "${HOME}/.bashrc"; then
-  echo '[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"' >> "${HOME}/.bashrc"
-  echo "➕ Added source line for .bashrc-developer to ~/.bashrc"
+
+# --- Defensive sourcing in ~/.bashrc ---
+ensure_source() {
+  local file="$1" marker="$2"
+  grep -q "$marker" "${HOME}/.bashrc" 2>/dev/null || {
+    echo "$marker" >> "${HOME}/.bashrc"
+    echo "➕ Added ${marker} to ~/.bashrc"
+  }
+}
+ensure_source ".bash_aliases" '[ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"'
+ensure_source ".bash_aliases_ai" '[ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"'
+ensure_source ".bash_completions_extras" '[[ -f "$HOME/.bash_completions_extras" ]] && source "$HOME/.bash_completions_extras"'
+ensure_source ".bashrc-developer" '[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"'
+
+# --- Quick hardware check: detect GPU vendor ---
+echo
+if lspci | grep -qi nvidia; then
+  echo "💡 Detected NVIDIA GPU — ensure nvidia-container-toolkit installed for containerd"
+elif lspci | grep -qi amd; then
+  echo "💡 Detected AMD GPU — ensure ROCm packages and /dev/kfd permissions OK"
+else
+  echo "💡 No discrete GPU detected"
 fi
 
 # --- Summary ---
 echo
 echo "🎉 Done."
 echo "   Repo: ${DOTFILES_DIR}"
-echo "   Global ignore: $(git config --global --get core.excludesfile || echo 'not set')"
 echo "   Symlinks created for:"
-printf "   - %s\n" ".bashrc" ".bashrc-developer" ".bash_aliases" ".bash_completions_extras" ".gitconfig" ".gitignore_global"
+printf "   - %s\n" ".bashrc" ".bashrc-developer" ".bash_aliases" ".bash_aliases_ai" ".bash_completions_extras" ".gitconfig" ".gitignore_global"
+echo "   + ai-check available in ~/bin"
 echo
 echo "Restart your shell or run:  source ~/.bashrc"
 echo
