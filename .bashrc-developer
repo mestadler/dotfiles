@@ -4,7 +4,7 @@
 # ===========================================
 
 # Load only once per interactive shell
-[[ $- != *i* ]] && return 0          # skip non-interactive shells
+[[ $- != *i* ]] && return 0
 if [[ "${BASHRC_DEVELOPER_LOADED:-}" == "1" ]]; then
   return 0
 fi
@@ -152,7 +152,6 @@ git_acp() {
         echo "Push disabled by flag (--no-push)."
     fi
 }
-
 
 # --- Message ---
 echo "🧩 Developer shell loaded"
