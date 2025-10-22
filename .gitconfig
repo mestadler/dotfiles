@@ -1,0 +1,68 @@
+[user]
+	name = Martin Stadler
+	email = martin@sansnom.co.uk
+
+[core]
+	editor = vi
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+	filemode = false
+
+[init]
+	defaultBranch = main
+
+[color]
+	ui = auto
+
+[credential]
+	# Let GitHub CLI handle HTTPS credentials (works well without GCM)
+	helper = "!gh auth git-credential"
+
+[pull]
+	rebase = true
+
+[rebase]
+	autosquash = true
+
+[push]
+	default = simple
+	followTags = true
+
+[fetch]
+	prune = true
+
+[merge]
+	ff = only
+
+[rerere]
+	enabled = true
+
+[tag]
+	sort = version:refname
+
+[alias]
+	st = status -sb
+	co = checkout
+	cob = checkout -b
+	br = branch -vv
+	ci = commit -v
+	ca = commit -v -a
+	cm = commit -m
+	amend = commit --amend --no-edit
+	rb = rebase -i --rebase-merges
+	lg = log --oneline --graph --decorate --all
+	last = log -1 HEAD
+	df = diff --word-diff
+	ours = "!f(){ git checkout --ours -- \"$@\" && git add \"$@\"; }; f"
+	theirs = "!f(){ git checkout --theirs -- \"$@\" && git add \"$@\"; }; f"
+
+# ── Optional org-specific overrides (uncomment + create file if needed) ─────────
+# [includeIf "gitdir:~/DevOps/*k0rdent*/"]
+#     path = ~/.gitconfig-work
+#
+# Then put work-specific overrides in ~/.gitconfig-work, e.g.:
+#   [user]
+#       email = your.work.email@company.com
+#   [commit]
+#       gpgsign = true
+

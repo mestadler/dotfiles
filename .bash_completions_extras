@@ -1,0 +1,70 @@
+# ===========================================
+# Extra Bash Completions (lazy-loaded)
+# Martin Stadler (mestadler)
+# ===========================================
+
+# --- GitHub CLI ---
+if command -v gh >/dev/null 2>&1; then
+  eval "$(gh completion -s bash)"
+fi
+
+# --- Kubernetes / kubectl (+ alias k) ---
+if command -v kubectl >/dev/null 2>&1; then
+  source <(kubectl completion bash)
+  complete -o default -F __start_kubectl k
+fi
+
+# --- k0rdent / k0s ---
+if command -v k0rdent >/dev/null 2>&1; then
+  source <(k0rdent completion bash) 2>/dev/null || true
+fi
+if command -v k0s >/dev/null 2>&1; then
+  source <(k0s completion bash) 2>/dev/null || true
+fi
+
+# --- Docker / nerdctl ---
+if command -v docker >/dev/null 2>&1; then
+  source <(docker completion bash) 2>/dev/null || true
+fi
+if command -v nerdctl >/dev/null 2>&1; then
+  source <(nerdctl completion bash) 2>/dev/null || true
+fi
+
+# --- Flux ---
+if command -v flux >/dev/null 2>&1; then
+  source <(flux completion bash) 2>/dev/null || true
+fi
+
+# --- Helm ---
+if command -v helm >/dev/null 2>&1; then
+  source <(helm completion bash) 2>/dev/null || true
+fi
+
+# --- ORAS ---
+if command -v oras >/dev/null 2>&1; then
+  source <(oras completion bash) 2>/dev/null || true
+fi
+
+# --- Cosign ---
+if command -v cosign >/dev/null 2>&1; then
+  source <(cosign completion bash) 2>/dev/null || true
+fi
+
+# --- KVM / Virtualisation (best-effort) ---
+# virsh completion is usually shipped via bash-completion and autoloaded.
+# If a standalone script exists, try common locations:
+if command -v virsh >/dev/null 2>&1; then
+  for f in \
+    /usr/share/bash-completion/completions/virsh \
+    /etc/bash_completion.d/virsh \
+    /usr/share/virt-manager/virsh-completion.bash
+  do
+    [ -f "$f" ] && . "$f" && break
+  done
+fi
+
+# KubeVirt (virtctl), if present:
+if command -v virtctl >/dev/null 2>&1; then
+  source <(virtctl completion bash) 2>/dev/null || true
+fi
+

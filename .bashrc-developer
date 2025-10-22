@@ -1,0 +1,123 @@
+# ===========================================
+# Developer Bash Config — Martin Stadler
+# For Debian, OpenWrt, Kubernetes, and Docker
+# ===========================================
+
+# --- Load only once ---
+[[ "$BASHRC_DEVELOPER_LOADED" == "1" ]] && return
+export BASHRC_DEVELOPER_LOADED=1
+
+# --- Environment ---
+export EDITOR=vi
+export VISUAL=vi
+export PAGER=less
+export LESS="-R"
+
+# --- Paths ---
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
+
+# --- GitHub CLI shortcuts ---
+alias ghc='gh repo clone'
+alias ghr='gh repo view --web'
+alias ghp='gh pr view --web'
+
+# --- Git helpers ---
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -v'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate'
+
+# --- Docker & container tools ---
+alias d='docker'
+alias dps='docker ps'
+alias dclean='docker system prune -af --volumes'
+alias dcleanc='docker container prune -f'
+alias dcleani='docker image prune -af'
+alias dcleanv='docker volume prune -f'
+alias dcupdate='docker compose pull && docker compose up -d --remove-orphans'
+alias dctail='docker compose logs -f --tail=100'
+
+# --- nerdctl & containerd ---
+alias nc='nerdctl'
+alias ncl='nerdctl ps -a'
+alias nci='nerdctl images'
+alias ncr='nerdctl run --rm -it'
+
+# --- Package management ---
+alias apu='sudo apt update && sudo apt upgrade -y'
+alias api='sudo apt install -y'
+alias apr='sudo apt autoremove -y'
+alias dpi='sudo dpkg -i'
+alias opi='opkg install'
+alias ops='opkg list-installed | grep'
+
+# --- Kubernetes / k0s / k0rdent ---
+if command -v kubecolor >/dev/null 2>&1; then
+  alias kubectl='kubecolor'
+fi
+complete -F __start_kubectl kubectl 2>/dev/null || true
+alias k='kubectl'
+alias kg='kubectl get'
+alias kgp='kubectl get pods -A'
+alias kgs='kubectl get svc -A'
+alias kgn='kubectl get nodes'
+alias kl='kubectl logs -f'
+alias ke='kubectl exec -it'
+alias kd='kubectl describe'
+alias kctx='kubectl config get-contexts'
+alias kns='kubectl config set-context --current --namespace'
+
+# --- k0rdent-specific ---
+alias kdlogin='k0rdent auth login'
+alias kdlist='k0rdent cluster list'
+alias kdinfo='k0rdent cluster info'
+alias kdapply='k0rdent apply -f'
+
+# --- Useful functions ---
+
+# Quick clone + enter
+gh_clone() {
+  if [ -z "$1" ]; then
+    echo "Usage: gh_clone <owner/repo>"
+    return 1
+  fi
+  gh repo clone "$1"
+  cd "$(basename "$1")" || return
+}
+
+# Quick repo creation
+gh_create_repo() {
+  if [ -z "$1" ]; then
+    echo "Usage: gh_create_repo <repo-name>"
+    return 1
+  fi
+  gh repo create "$1" --private --source=. --push
+}
+
+# Docker cleanup summary
+dcleanall() {
+  echo "🧹 Cleaning all Docker resources..."
+  docker stop $(docker ps -aq) 2>/dev/null || true
+  docker system prune -af --volumes
+}
+
+# Kubernetes context summary
+kctxs() {
+  echo "Current context:"
+  kubectl config current-context
+  echo
+  echo "Available contexts:"
+  kubectl config get-contexts
+}
+
+# --- Prompt ---
+if [[ $PS1 && -z "${INSIDE_EMACS}" ]]; then
+  PS1='\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]$ '
+fi
+
+# --- Message ---
+echo "🧩 Developer shell loaded (.bashrc-developer)"
+
