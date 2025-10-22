@@ -70,10 +70,15 @@ alias du='du -h'
 alias free='free -h'
 alias rm='rm -i'
 
-# --- Add ~/.local/bin and ~/bin to PATH ---
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+# ===========================================
+# PATH Configuration
+# ===========================================
+# Ensure custom binaries take precedence over system ones
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
-# --- Completion system ---
+# ===========================================
+# Base Completion System
+# ===========================================
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -82,22 +87,21 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# --- Developer profile integration ---
-if [ -f "$HOME/.bashrc-developer" ]; then
-  source "$HOME/.bashrc-developer"
-fi
+# ===========================================
+# Load User Configuration (Order Matters!)
+# ===========================================
 
-[ -f "$HOME/.bash_completions_extras" ] && source "$HOME/.bash_completions_extras"
+# 1. Developer profile (environment variables, functions)
+[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"
 
-
-# --- Load optional aliases (if user has ~/.bash_aliases) ---
-if [ -f ~/.bash_aliases ]; then
-  . ~/.bash_aliases
-fi
-
-# --- Final greeting ---
-echo "👋 Bash environment loaded for $(whoami) — $(hostname)"
-
+# 2. Aliases (must load BEFORE completions)
 [ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"
 [ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"
-[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"
+
+# 3. Extra completions (must load AFTER aliases)
+[ -f "$HOME/.bash_completions_extras" ] && source "$HOME/.bash_completions_extras"
+
+# ===========================================
+# Final Greeting
+# ===========================================
+echo "👋 Bash environment loaded for $(whoami) — $(hostname)"

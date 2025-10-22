@@ -1,5 +1,5 @@
 # ===========================================
-# ~/.bash_aliases — Common + nerdctl-first
+# ~/.bash_aliases — Common Aliases
 # Martin Stadler (mestadler)
 # ===========================================
 
@@ -41,7 +41,7 @@ alias pingg='ping -c 4 8.8.8.8'
 alias digg='dig +short myip.opendns.com @resolver1.opendns.com'
 
 # ==================================================
-# nerdctl (containerd) — primary container interface
+# Container Tools — nerdctl (containerd) primary
 # ==================================================
 
 alias nc='nerdctl'
@@ -89,7 +89,7 @@ alias nccleanv='nerdctl volume prune -f'
 alias nccleani='nerdctl image prune -af'
 alias nccleanall='nerdctl system prune -af --volumes'
 
-# --- Aliases for Docker muscle memory ---
+# --- Docker compatibility aliases (point to nerdctl) ---
 alias docker='nerdctl'
 alias d='nerdctl'
 alias dps='nerdctl ps -a'
@@ -114,7 +114,7 @@ alias kctx='kubectl config get-contexts'
 alias kns='kubectl config set-context --current --namespace'
 
 # ==================================================
-# Git / System Utilities
+# Git Shortcuts
 # ==================================================
 alias gs='git status -sb'
 alias gl='git log --oneline --graph --decorate --all'
@@ -125,16 +125,20 @@ alias gco='git checkout'
 alias gb='git branch -vv'
 alias gd='git diff'
 
+# ==================================================
+# Package Management
+# ==================================================
 alias aptu='sudo apt update && sudo apt upgrade -y'
 alias apti='sudo apt install -y'
 alias aptr='sudo apt autoremove -y'
 alias rebootf='sudo systemctl reboot -i'
 
-# --- Misc ---
+# ==================================================
+# Utilities
+# ==================================================
 alias serve='python3 -m http.server 8080'
 alias weather='curl -s wttr.in/London'
 alias ipinfo='curl -s ipinfo.io | jq'
 
 # --- Custom message ---
-echo "🐋 Aliases loaded (nerdctl-first mode)"
-
+echo "🐋 Aliases loaded"

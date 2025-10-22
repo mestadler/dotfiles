@@ -1,74 +1,47 @@
 # ===========================================
 # Developer Bash Config — Martin Stadler
-# For Debian, OpenWrt, Kubernetes, and Docker
+# For Kubernetes, Containers, and DevOps
 # ===========================================
 
 # --- Load only once ---
 [[ "$BASHRC_DEVELOPER_LOADED" == "1" ]] && return
 export BASHRC_DEVELOPER_LOADED=1
 
-# --- Environment ---
+# ==================================================
+# Environment Variables
+# ==================================================
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
 export LESS="-R"
 
-# --- Paths ---
-export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
-
-# --- GitHub CLI shortcuts ---
+# ==================================================
+# GitHub CLI shortcuts
+# ==================================================
 alias ghc='gh repo clone'
 alias ghr='gh repo view --web'
 alias ghp='gh pr view --web'
 
-# --- Git helpers ---
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit -v'
-alias gp='git push'
-alias gpl='git pull'
-alias gd='git diff'
-alias gl='git log --oneline --graph --decorate'
-
-# --- Docker & container tools ---
-alias d='docker'
-alias dps='docker ps'
-alias dclean='docker system prune -af --volumes'
-alias dcleanc='docker container prune -f'
-alias dcleani='docker image prune -af'
-alias dcleanv='docker volume prune -f'
+# ==================================================
+# Docker Compose Shortcuts (additional)
+# ==================================================
 alias dcupdate='docker compose pull && docker compose up -d --remove-orphans'
 alias dctail='docker compose logs -f --tail=100'
 
-# --- nerdctl & containerd ---
-alias nc='nerdctl'
-alias ncl='nerdctl ps -a'
-alias nci='nerdctl images'
-alias ncr='nerdctl run --rm -it'
-
-# --- Package management ---
-alias apu='sudo apt update && sudo apt upgrade -y'
-alias api='sudo apt install -y'
-alias apr='sudo apt autoremove -y'
+# ==================================================
+# Package Management (additional)
+# ==================================================
 alias dpi='sudo dpkg -i'
 alias opi='opkg install'
 alias ops='opkg list-installed | grep'
 
-# --- Kubernetes / k0s / k0rdent ---
+# ==================================================
+# Kubernetes Extras
+# ==================================================
+# Use kubecolor if available
 if command -v kubecolor >/dev/null 2>&1; then
   alias kubectl='kubecolor'
 fi
-complete -F __start_kubectl kubectl 2>/dev/null || true
-alias k='kubectl'
-alias kg='kubectl get'
-alias kgp='kubectl get pods -A'
-alias kgs='kubectl get svc -A'
-alias kgn='kubectl get nodes'
-alias kl='kubectl logs -f'
-alias ke='kubectl exec -it'
-alias kd='kubectl describe'
-alias kctx='kubectl config get-contexts'
-alias kns='kubectl config set-context --current --namespace'
 
 # --- k0rdent-specific ---
 alias kdlogin='k0rdent auth login'
@@ -76,9 +49,11 @@ alias kdlist='k0rdent cluster list'
 alias kdinfo='k0rdent cluster info'
 alias kdapply='k0rdent apply -f'
 
-# --- Useful functions ---
+# ==================================================
+# Useful Functions
+# ==================================================
 
-# Quick clone + enter
+# Quick GitHub clone + enter directory
 gh_clone() {
   if [ -z "$1" ]; then
     echo "Usage: gh_clone <owner/repo>"
@@ -97,7 +72,7 @@ gh_create_repo() {
   gh repo create "$1" --private --source=. --push
 }
 
-# Docker cleanup summary
+# Docker cleanup with confirmation
 dcleanall() {
   echo "🧹 Cleaning all Docker resources..."
   docker stop $(docker ps -aq) 2>/dev/null || true
@@ -113,13 +88,32 @@ kctxs() {
   kubectl config get-contexts
 }
 
-# --- Prompt ---
+# Kubernetes namespace quick switch
+kn() {
+  if [ -z "$1" ]; then
+    kubectl config view --minify --output 'jsonpath={..namespace}'
+    echo
+  else
+    kubectl config set-context --current --namespace="$1"
+  fi
+}
+
+# Quick pod logs for a deployment
+klog() {
+  if [ -z "$1" ]; then
+    echo "Usage: klog <pod-name-prefix> [namespace]"
+    return 1
+  fi
+  local ns="${2:---all-namespaces}"
+  kubectl logs -f $(kubectl get pods $ns | grep "$1" | head -1 | awk '{print $1}') $ns
+}
+
+# ==================================================
+# Custom Prompt (optional - override default)
+# ==================================================
 if [[ $PS1 && -z "${INSIDE_EMACS}" ]]; then
   PS1='\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]$ '
 fi
 
 # --- Message ---
-echo "🧩 Developer shell loaded (.bashrc-developer)"
-
-[ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"
-
+echo "🧩 Developer shell loaded"
