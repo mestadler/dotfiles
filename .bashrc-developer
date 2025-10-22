@@ -23,13 +23,13 @@ alias ghr='gh repo view --web'
 alias ghp='gh pr view --web'
 
 # ==================================================
-# Docker Compose Shortcuts (additional)
+# Docker Compose Shortcuts (additional to .bash_aliases)
 # ==================================================
 alias dcupdate='docker compose pull && docker compose up -d --remove-orphans'
 alias dctail='docker compose logs -f --tail=100'
 
 # ==================================================
-# Package Management (additional)
+# Package Management (additional to .bash_aliases)
 # ==================================================
 alias dpi='sudo dpkg -i'
 alias opi='opkg install'
@@ -88,7 +88,7 @@ kctxs() {
   kubectl config get-contexts
 }
 
-# Kubernetes namespace quick switch
+# Kubernetes namespace quick switch and display
 kn() {
   if [ -z "$1" ]; then
     kubectl config view --minify --output 'jsonpath={..namespace}'

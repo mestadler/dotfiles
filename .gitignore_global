@@ -1,260 +1,104 @@
-# =========================
-# Universal Git Ignore File
-# For Python + AI/ML + DevOps + Docs
-# MES 22-10-25
-# =========================
+# ===========================================
+# Global gitignore — Martin Stadler
+# ===========================================
 
-# === Byte-compiled / optimized / DLL files ===
-__pycache__/
-*.py[cod]
-*$py.class
+# --- Operating System ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
 
-# === C extensions ===
-*.so
-
-# === Distribution / packaging ===
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# === PyInstaller ===
-*.manifest
-*.spec
-
-# === Installer logs ===
-pip-log.txt
-pip-delete-this-directory.txt
-
-# === Unit test / coverage reports ===
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# === Translations ===
-*.mo
-*.pot
-
-# === Django / Flask / Scrapy ===
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-instance/
-.webassets-cache
-.scrapy
-
-# === Sphinx / Documentation ===
-docs/_build/
-.site/
-notes_auto/
-exported_docs/
-generated_docs/
-ai_reports/
-ai_notes/
-summary_logs/
-
-# === PyBuilder / Poetry / Pipenv / pdm ===
-.pybuilder/
-target/
-poetry.lock
-Pipfile.lock
-.pdm.toml
-.python-version
-__pypackages__/
-
-# === Jupyter / IPython ===
-.ipynb_checkpoints
-profile_default/
-ipython_config.py
-
-# === Celery / SageMath ===
-celerybeat-schedule
-celerybeat.pid
-*.sage.py
-
-# === Virtual Environments ===
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-.env.*
-
-# === IDEs & Editors ===
-.idea/
-.vscode/
+# --- Editors ---
 *.swp
 *.swo
 *~
-.spyderproject
-.spyproject
-.ropeproject
-*.code-workspace
-*.sublime-project
-*.sublime-workspace
+.vscode/
+.idea/
+*.sublime-*
+.project
+.settings/
 
-# === Type Checkers / Linters ===
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-.pytype/
-cython_debug/
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+.env
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
 
-# === Node / JS ===
+# --- Node.js ---
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
-.pnpm-debug.log*
+.npm
+.eslintcache
 
-# === Go ===
-bin/
-*.test
+# --- Build artifacts ---
+*.o
+*.a
+*.so
+*.exe
 *.out
-vendor/
+*.log
+*.tmp
 
-# === Docker / Containers ===
-*.tar
-*.img
-*.qcow2
-*.iso
-.docker/
-docker-compose.override.yml
+# --- Secrets / Credentials ---
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*_rsa
+*_rsa.pub
+.env
+.env.*
+secrets.yaml
+secrets.yml
+*-secret.yaml
+*-secret.yml
+credentials.json
+token
+.credentials
 
-# === Kubernetes / k0rdent ===
+# --- Kubernetes ---
+kubeconfig
 *.kubeconfig
-*.yaml.bak
-*.secret.yaml
-*.local.yaml
-bundle-*.tar.gz
-airgap-*.tar
-static_binaries/
-charts/
-tmp-artifacts/
-.registry/
-oras-cache/
-.harbor/
-oras-auth.json
 
-# === AI / ML Artifacts ===
-# Model weights, datasets, experiments, notebooks
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+*.tfvars
+
+# --- AI / ML ---
 *.ckpt
-*.pt
-*.bin
-*.safetensors
-*.onnx
 *.h5
-*.tflite
-*.npz
-*.npy
 *.pkl
-*.joblib
+*.pt
 *.pth
-*.tar.gz
-*.zip
-runs/
 wandb/
 mlruns/
-output/
-outputs/
-checkpoints/
-experiments/
-weights/
-models/
-datasets/
-data/
-huggingface/
-__outputs__/
-__results__/
 
-# === AI / Generated or Metadata Files ===
-*.ai
-*.ai.md
-*-ai-generated*
-.aider*
-.ai/
-.claude/
-.cursor/
-.claude-artifacts/
-.cursor-tutor/
-.github/copilot/
-ai-context/
-ai-notes/
-ai-logs/
-ai-cache/
-ai-temp/
-*.jsonl
-*.parquet
-*.csv
-*.tmp
-*.bak
-*.old
-
-# === Markdown / Documentation Drafts ===
-*.md.bak
-*.md.tmp
-*.md~
-*.md.old
-*_draft.md
-*_backup.md
-
-# === Config files (keep examples) ===
-config.toml
-!config.toml.example
-!*.example
-
-# === OS / Misc ===
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-Icon?
-.Spotlight-V100
-.Trashes
-*.orig
-*.rej
-*.diff
-*.patch
-
-# === Secrets ===
-secrets/
-*.key
-*.crt
-*.pem
-*.p12
-*.token
-*.enc
-id_rsa*
-id_ed25519*
-.kube/
-*.ovpn
-
+# --- Cache directories ---
+.cache/
+cache/
+tmp/
+temp/

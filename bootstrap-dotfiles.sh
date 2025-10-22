@@ -35,8 +35,9 @@ link_file() {
   local src="$1" dst="$2"
   local abs_src
   abs_src="$(readlink -f "$src")"
+  
   mkdir -p "$(dirname "$dst")"
-
+  
   if [ -e "$dst" ] || [ -L "$dst" ]; then
     if [ -L "$dst" ] && [ "$(readlink -f "$dst")" = "$abs_src" ]; then
       echo "↔️  Link exists (ok): ${dst} → ${abs_src}"
@@ -47,7 +48,7 @@ link_file() {
     echo "🗂  Backing up ${dst} → ${bak}"
     mv -f "$dst" "$bak"
   fi
-
+  
   ln -s "$abs_src" "$dst"
   echo "🔗 Linked ${dst} → ${abs_src}"
 }
@@ -85,19 +86,6 @@ if [ -f "ai-check.sh" ]; then
   link_file "ai-check.sh" "$HOME/bin/ai-check"
 fi
 
-# --- Defensive sourcing in ~/.bashrc ---
-ensure_source() {
-  local file="$1" marker="$2"
-  grep -q "$marker" "${HOME}/.bashrc" 2>/dev/null || {
-    echo "$marker" >> "${HOME}/.bashrc"
-    echo "➕ Added ${marker} to ~/.bashrc"
-  }
-}
-ensure_source ".bash_aliases" '[ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"'
-ensure_source ".bash_aliases_ai" '[ -f "$HOME/.bash_aliases_ai" ] && . "$HOME/.bash_aliases_ai"'
-ensure_source ".bash_completions_extras" '[[ -f "$HOME/.bash_completions_extras" ]] && source "$HOME/.bash_completions_extras"'
-ensure_source ".bashrc-developer" '[ -f "$HOME/.bashrc-developer" ] && source "$HOME/.bashrc-developer"'
-
 # --- Quick hardware check: detect GPU vendor ---
 echo
 if lspci | grep -qi nvidia; then
@@ -113,9 +101,8 @@ echo
 echo "🎉 Done."
 echo "   Repo: ${DOTFILES_DIR}"
 echo "   Symlinks created for:"
-printf "   - %s\n" ".bashrc" ".bashrc-developer" ".bash_aliases" ".bash_aliases_ai" ".bash_completions_extras" ".gitconfig" ".gitignore_global"
+printf "   - %s\n" ".bashrc" ".bashrc-developer" ".bash_aliases" ".bash_aliases_ai" ".bash_completions_extras" ".gitconfig" ".gitignore_global" ".vimrc"
 echo "   + ai-check available in ~/bin"
 echo
 echo "Restart your shell or run:  source ~/.bashrc"
 echo
-

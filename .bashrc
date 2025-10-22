@@ -57,7 +57,7 @@ if [ -x /usr/bin/dircolors ]; then
   alias fgrep='fgrep --color=auto'
 fi
 
-# --- ls aliases ---
+# --- Basic ls aliases ---
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
